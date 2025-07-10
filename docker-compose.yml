@@ -1,0 +1,40 @@
+services:
+  rm-postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: rm_user
+      POSTGRES_PASSWORD: rm_pass
+      POSTGRES_DB: rm_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  rm-data-fetcher:
+    build: ./rm-data-fetcher
+    environment:
+      DB_HOST: rm-postgres
+      DB_PORT: 5432
+      DB_USER: rm_user
+      DB_PASSWORD: rm_pass
+      DB_NAME: rm_db
+    volumes:
+      - ./rm-data-fetcher/.env:/app/.env 
+    depends_on:
+      - rm-postgres
+
+  rm-app-nuxt:
+    build: ./rm-app-nuxt
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: rm-postgres
+      DB_PORT: 5432
+      DB_USER: rm_user
+      DB_PASSWORD: rm_pass
+      DB_NAME: rm_db
+    depends_on:
+      - rm-postgres
+
+volumes:
+  pgdata:
