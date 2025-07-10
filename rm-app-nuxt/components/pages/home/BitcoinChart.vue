@@ -6,7 +6,10 @@
 import type { ApexOptions } from "apexcharts";
 import type { BitcoinPrice } from "~/shared/types/BitcoinPrice";
 
-const { priceData } = defineProps<{ priceData: BitcoinPrice[] }>();
+const { priceData, isDaily } = defineProps<{
+  priceData: BitcoinPrice[];
+  isDaily: boolean;
+}>();
 
 const series = computed(() => {
   if (!priceData?.length) return [];
@@ -22,30 +25,43 @@ const series = computed(() => {
   ];
 });
 
-const chartOptions = computed<ApexOptions>(() => ({
-  chart: {
-    type: "line",
-    zoom: { enabled: true },
-  },
-  xaxis: {
-    type: "datetime",
-    labels: { format: "dd MMM" },
-  },
-  yaxis: {
-    title: { text: "Цена (USD)" },
-    labels: {
-      formatter: (value: number) => `$${value.toFixed(2)}`,
+const chartOptions = computed<ApexOptions>(() => {
+  const xaxis: ApexXAxis = isDaily
+    ? {
+        type: "datetime",
+        labels: {
+          format: "HH:mm",
+          datetimeUTC: false,
+        },
+        tickAmount: 6,
+      }
+    : {
+        type: "datetime",
+        labels: { format: "dd MMM" },
+      };
+
+  return {
+    chart: {
+      type: "line",
+      zoom: { enabled: true },
     },
-  },
-  stroke: { curve: "smooth", width: 3 },
-  tooltip: {
-    x: { format: "dd MMM yyyy HH:mm" },
-    y: {
-      formatter: (value: number) => `$${value.toFixed(2)}`,
+    xaxis,
+    yaxis: {
+      title: { text: "Цена (USD)" },
+      labels: {
+        formatter: (value: number) => `$${value.toFixed(2)}`,
+      },
     },
-  },
-  colors: ["#3B82F6"],
-}));
+    stroke: { curve: "smooth", width: 3 },
+    tooltip: {
+      x: { format: "dd MMM yyyy HH:mm" },
+      y: {
+        formatter: (value: number) => `$${value.toFixed(2)}`,
+      },
+    },
+    colors: ["#3B82F6"],
+  };
+});
 </script>
 
 <style scoped>

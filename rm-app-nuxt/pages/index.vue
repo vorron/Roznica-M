@@ -16,7 +16,7 @@
 
     <div v-else>
       <ClientOnly>
-        <PagesHomeBitcoinChart :price-data="priceData" />
+        <PagesHomeBitcoinChart :price-data="priceData" :is-daily="selectedPeriod === 'day'" />
       </ClientOnly>
     </div>
   </div>
