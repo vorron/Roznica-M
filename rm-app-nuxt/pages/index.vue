@@ -6,6 +6,10 @@
 
     <PeriodSelector v-if="selectedPeriod === 'custom'" v-model:start="startDate" v-model:end="endDate" />
 
+    <div v-if="validationError" class="bg-yellow-100 text-yellow-800 p-4 rounded mb-4">
+      {{ validationError }}
+    </div>
+
     <div v-if="pending" class="text-center py-12">
       <p>Загрузка данных...</p>
     </div>
@@ -34,13 +38,17 @@ const initialStartDate = format(subDays(new Date(), 7), "yyyy-MM-dd");
 const initialEndDate = new Date().toISOString().split("T")[0];
 const initialPeriod = "month" as const;
 
-const { pending, error, selectedPeriod, startDate, endDate, priceData, refresh } = useBitcoinData(
+const { pending, error, selectedPeriod, startDate, endDate, priceData, refresh, validationError } = useBitcoinData(
   initialPeriod,
   initialStartDate,
   initialEndDate
 );
 
 onMounted(async () => {
-  await refresh();
+  try {
+    await refresh();
+  } catch (e) {
+    console.error("Ошибка при загрузке данных:", e);
+  }
 });
 </script>
