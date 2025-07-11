@@ -10,12 +10,20 @@ export class HistoricalTask implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    await this.loadHistoricalData(365);
+    try {
+      await this.loadHistoricalData(365);
+    } catch (err) {
+      console.error('HistoricalTask onModuleInit error:', err);
+    }
   }
 
   async loadHistoricalData(days: number) {
-    await this.database.clear();
-    const historicalData = await this.exchange.getHistoricalPrices(days);
-    await this.database.bulkInsertPrices(historicalData);
+    try {
+      await this.database.clear();
+      const historicalData = await this.exchange.getHistoricalPrices(days);
+      await this.database.bulkInsertPrices(historicalData);
+    } catch (err) {
+      console.error('HistoricalTask loadHistoricalData error:', err);
+    }
   }
 }

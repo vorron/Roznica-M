@@ -12,7 +12,11 @@ export class BitcoinScheduler {
 
   @Cron('*/10 * * * *')
   async handleCron() {
-    const price = await this.exchange.getCurrentPrice();
-    await this.database.savePrice(price);
+    try {
+      const price = await this.exchange.getCurrentPrice();
+      await this.database.savePrice(price);
+    } catch (err) {
+      console.error('BitcoinScheduler handleCron error:', err);
+    }
   }
 }
